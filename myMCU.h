@@ -24,6 +24,9 @@
 #define PERIOD_READ             (10000)
 #define PERIOD_UPLOAD         (20000)
 
+#define AP_NAME                   ("TAHM")
+#define AP_PASSWORD           ("1234")
+
 class myMCU {
   private:
     int temperature;

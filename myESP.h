@@ -2,7 +2,6 @@
 #define __MY_ESP_H
 
 #include <Arduino.h>
-#include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 #include "constants.h"
@@ -20,7 +19,9 @@ class myESP {
   public:
     bool init();
     bool getNetworkState();
-    bool uploadData(int temp, int humi);
+    bool uploadData(const char* api, int temp, int humi);
+    void setConfigPortalTimeOut(unsigned long seconds);
+    bool startConfigPortal(const char* apName, const char* apPass);
 };
 
 #endif //end of __MY_ESP_H

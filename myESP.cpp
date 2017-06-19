@@ -7,7 +7,6 @@ int port = 80;
 //char* user =  "ohfhrjgc";
 //char* password = "HaLG92uRPiYX";
 //char* clientName = "esp8266";
-char apiKey[] = "HIXV5H5LOMVRE1I0";
 
 //char ssid[] = "THACHBAONGUYEN_24GHZ";
 char ssid[] = "FPT Telecom";
@@ -36,13 +35,13 @@ bool myESP::init() {
 }
 
 bool myESP::getNetworkState() {
-  return isOnline;
+  return WiFi.status() == WL_CONNECTED;
 }
 
-bool myESP::uploadData(int temp, int humi) {
+bool myESP::uploadData(const char* api, int temp, int humi) {
   if (wifiClient.connect(server, port)) {
     SHOUT(F("WiFi Client connected "));
-    String postStr = apiKey;
+    String postStr = api;
     postStr += "&field1=";
     postStr += String(temp);
     postStr += "&field2=";
@@ -52,7 +51,7 @@ bool myESP::uploadData(int temp, int humi) {
     wifiClient.print("POST /update HTTP/1.1\n");
     wifiClient.print("Host:" + String(server) + "\n");
     wifiClient.print("Connection: close\n");
-    wifiClient.print("X-THINGSPEAKAPIKEY: " + String(apiKey) + "\n");
+    wifiClient.print("X-THINGSPEAKAPIKEY: " + String(api) + "\n");
     wifiClient.print("Content-Type: application/x-www-form-urlencoded\n");
     wifiClient.print("Content-Length: ");
     wifiClient.print(postStr.length());
@@ -66,3 +65,12 @@ bool myESP::uploadData(int temp, int humi) {
   }
   return isOnline;
 }
+
+void myESP::setConfigPortalTimeOut(unsigned long seconds) {
+  wifiManager.setTimeout(seconds);
+}
+
+bool myESP::startConfigPortal(const char* apName, const char* apPass) {
+  return wifiManager.startConfigPortal(apName, apPass);
+}
+

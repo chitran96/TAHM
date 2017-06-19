@@ -109,7 +109,9 @@ void myMCU::work() {
 
     if ((unsigned long) millis() - tProcess3 > uploadPeriod) {
       if (netStatus) {
-        gESP.uploadData(temperature, humidity);
+        // need clear
+        char apiKey[] = "HIXV5H5LOMVRE1I0";
+        gESP.uploadData(apiKey, temperature, humidity);
       }
       tProcess3 = millis();
     }
@@ -151,9 +153,18 @@ void myMCU::handleButton() {
             modeChanged = true;
             if (gLCD.getScreen()  == SCREEN_DISPLAY) {
               gLCD.configScreen();
-            }
-            else if (gLCD.getScreen()  == SCREEN_CONFIG) {
-              gLCD.displayScreen(temperature, humidity, netStatus);
+              gESP.setConfigPortalTimeOut(10 * 60);
+              if (!gESP.startConfigPortal(AP_NAME, AP_PASSWORD)) {
+                SHOUT(F("Failed to connect and hit timeout"));
+                delay(3000);
+                ESP.reset();
+                delay(5000);
+              }
+              else {
+                SHOUT(F("Connected"));
+                netStatus = gESP.getNetworkState();
+                gLCD.displayScreen(temperature, humidity, netStatus);
+              }
             }
           }
         }
